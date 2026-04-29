@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Manejo de Excepciones en Java</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(135deg, #0f172a 0%, #1e2937 100%);
+      color: #e2e8f0;
+      overflow: hidden;
+      height: 100vh;
+    }
+
+    .slide {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      display: none;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 30px;
+      text-align: center;
+      opacity: 0;
+      transition: opacity 0.8s ease, transform 0.8s ease;
+    }
+
+    .slide.active {
+      display: flex;
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .title {
+      font-size: 3.2rem;
+      font-weight: 700;
+      margin-bottom: 15px;
+      background: linear-gradient(90deg, #22d3ee, #67e8f9);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      animation: titlePop 1s ease;
+    }
+
+    .content {
+      max-width: 1100px;
+      width: 95%;
+      font-size: 1.35rem;
+      line-height: 1.65;
+      background: rgba(15, 23, 42, 0.85);
+      padding: 45px;
+      border-radius: 24px;
+      border: 3px solid #22d3ee;
+      box-shadow: 0 25px 50px rgba(34, 211, 238, 0.25);
+      overflow-y: auto;
+      max-height: 88vh;
+    }
+
+    h2 {
+      font-size: 1.45rem;
+      margin: 20px 0 30px 0;
+      padding: 12px 20px;
+      border-radius: 12px;
+      font-weight: 600;
+    }
+
+    .code {
+      background: #0f172a;
+      color: #67e8f9;
+      padding: 28px;
+      border-radius: 16px;
+      font-family: 'Courier New', monospace;
+      font-size: 1.15rem;
+      text-align: left;
+      margin: 25px 0;
+      white-space: pre;
+      overflow-x: auto;
+      border-left: 6px solid #22d3ee;
+      animation: codeFade 1.2s ease;
+    }
+
+    .output {
+      background: #1e2937;
+      color: #86efac;
+      padding: 20px 28px;
+      border-radius: 12px;
+      margin-top: 25px;
+      font-weight: 600;
+      text-align: left;
+      border-left: 6px solid #4ade80;
+    }
+
+    button {
+      margin-top: 30px;
+      padding: 14px 32px;
+      font-size: 1.2rem;
+      background: #22d3ee;
+      color: #0f172a;
+      border: none;
+      border-radius: 50px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.3s;
+      box-shadow: 0 10px 20px rgba(34, 211, 238, 0.4);
+    }
+
+    button:hover {
+      transform: translateY(-5px) scale(1.05);
+      box-shadow: 0 15px 30px rgba(34, 211, 238, 0.6);
+    }
+
+    .nav {
+      position: fixed;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 100;
+    }
+
+    @keyframes titlePop {
+      0% { transform: scale(0.5); opacity: 0; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+
+    @keyframes codeFade {
+      0% { opacity: 0; transform: translateY(30px); }
+      100% { opacity: 1; transform: translateY(0); }
+    }
+
+    .bullet { animation: fadeInUp 0.6s ease forwards; }
+  </style>
+</head>
+<body>
+
+  <!-- Diapositiva 1: Título -->
+  <div class="slide active" id="slide1">
+    <div class="content">
+      <h1 class="title">Manejo de Excepciones en Java</h1>
+      <p class="subtitle" style="font-size:1.8rem; margin-bottom:40px;">Análisis del Capítulo 13 – Libro Deitel</p>
+      <p>Integrantes: Fernando Jhoel Quispe Gonzales</p>
+      <p>Moises junior apaza gonzales</p>
+    </div>
+  </div>
+
+  <!-- Diapositiva 2: ¿Qué es una Excepción? -->
+  <div class="slide" id="slide2">
+    <div class="content">
+      <h1 class="title">¿Qué es una Excepción?</h1>
+      <p>Según P. J. Deitel, una excepción es una indicación de un problema que ocurre durante la ejecución de un programa.</p>
+      <ul style="text-align:left; margin-top:30px; font-size:1.3rem;">
+        <li class="bullet">El nombre "excepción" implica que el problema ocurre con poca frecuencia.</li>
+        <li class="bullet">Permite crear programas robustos y tolerantes a fallas.</li>
+        <li class="bullet">Separa el código de detección de errores de la lógica del negocio.</li>
+      </ul>
+      <div style="margin-top:30px; font-style:italic; color:#67e8f9;">
+        "La robustez es la capacidad de un sistema para manejar condiciones de error durante la ejecución."
+      </div>
+    </div>
+  </div>
+
+  <!-- Diapositiva 3: Jerarquía Throwable -->
+  <div class="slide" id="slide3">
+    <div class="content">
+      <h1 class="title">Jerarquía de Clases Throwable</h1>
+      <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:20px; margin-top:30px;">
+        <div style="background:#1e2937; padding:20px; border-radius:12px;">
+          <strong>Throwable</strong><br>
+          Superclase de todas las excepciones y errores en Java.
+        </div>
+        <div style="background:#1e2937; padding:20px; border-radius:12px;">
+          <strong>Error</strong><br>
+          Problemas serios del sistema (JVM). No deben ser capturados.
+        </div>
+        <div style="background:#1e2937; padding:20px; border-radius:12px;">
+          <strong>Exception</strong><br>
+          Problemas que la aplicación puede capturar y manejar.
+        </div>
+        
+      </div>
+      <img src="Captura de pantalla 2026-04-28 192433.png" alt="">
+      <p style="margin-top:30px; color:#94a3b8;">Nota: Las excepciones se dividen en <strong>Checked</strong> y <strong>Unchecked</strong>.</p>
+    </div>
+  </div>
+
+  <!-- Diapositiva 4: Estructura Try-Catch-Finally -->
+  <div class="slide" id="slide4">
+    <div class="content">
+      <h1 class="title">Estructura de Manejo</h1>
+      <div class="code">
+try {
+    // Código propenso a errores
+} catch (Exception e) {
+    // Manejo del problema
+} finally {
+    // Limpieza obligatoria
+}
+      </div>
+      <p><strong>Try:</strong> Contiene el código que podría lanzar una excepción.</p>
+      <p><strong>Catch:</strong> Captura y maneja la excepción.</p>
+      <p><strong>Finally:</strong> Se ejecuta siempre (ideal para liberar recursos).</p>
+    </div>
+  </div>
+
+  <!-- Diapositiva 5: Ejemplo 1 -->
+  <div class="slide" id="slide5">
+    <div class="content">
+      <h1 class="title" style="background: linear-gradient(90deg, #f97316, #fb923c); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Ejemplo 1: ArithmeticException</h1>
+      <h2 style="background:#451a03; color:#fdba74;">Este código captura el error cuando intentas realizar una operación matemática imposible.<br>Jerarquía: Throwable → Exception → RuntimeException → ArithmeticException.</h2>
+      <div class="code">
+public class Ejemplo1 {
+    public static void main(String[] args) {
+        try {
+            System.out.println("Intentando dividir 10 entre 0...");
+            int resultado = 10 / 0; 
+        } catch (ArithmeticException e) {
+            System.err.println("CAPTURA: No se puede dividir entre cero.");
+            System.err.println("Mensaje de Java: " + e.getMessage());
+        }
+    }
+}
+      </div>
+      <div class="output">Intentando dividir 10 entre 0...
+CAPTURA: No se puede dividir entre cero.</div>
+    </div>
+  </div>
+
+  <!-- Diapositiva 6: Ejemplo 2 -->
+  <div class="slide" id="slide6">
+    <div class="content">
+      <h1 class="title" style="background: linear-gradient(90deg, #22c55e, #4ade80); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Ejemplo 2: InputMismatchException</h1>
+      <h2 style="background:#14532d; color:#86efac;">Ideal para demostrar cómo manejar cuando un usuario ingresa texto en lugar de un número.<br>Jerarquía: Throwable → Exception → RuntimeException → NoSuchElementException → InputMismatchException.</h2>
+      <div class="code">
+// Si el usuario ingresa una letra
+import java.util.Scanner;
+import java.util.InputMismatchException;
+
+public class Ejemplo2 {
+    public static void main(String[] args) {
+        Scanner teclado = new Scanner(System.in);
+        try {
+            System.out.print("Ingresa tu edad (número entero): ");
+            int edad = teclado.nextInt();
+            System.out.println("Edad registrada: " + edad);
+        } catch (InputMismatchException e) {
+            System.err.println("ERROR: El dato ingresado no es un número válido.");
+        }
+    }
+}
+      </div>
+      <div class="output">Ingresa tu edad (número entero): Hola
+        ERROR: El dato ingresado no es un número válido.
+    </div>
+    </div>
+  </div>
+
+  <!-- Diapositiva 7: Ejemplo 3 -->
+  <div class="slide" id="slide7">
+    <div class="content">
+      <h1 class="title" style="background: linear-gradient(90deg, #a855f7, #c084fc); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Ejemplo 3: Uso de Finally</h1>
+      <h2 style="background:#3b0764; color:#d8b4fe;">Demuestra que ciertas instrucciones se ejecutan siempre, garantizando la robustez del programa.</h2>
+      <div class="code">
+try {
+    System.out.println("Abriendo base de datos...");
+    throw new Exception("Fallo de conexion");
+} catch (Exception e) {
+    System.out.println("Atrapado: " + e.getMessage());
+} finally {
+    System.out.println("Cerrando base de datos forzosamente.");
+}
+      </div>
+      <div class="output">
+Abriendo base de datos...<br>
+Atrapado: Fallo de conexion<br>
+Cerrando base de datos forzosamente.
+      </div>
+    </div>
+  </div>
+
+  <!-- Diapositiva 8: Ejemplo 4 -->
+  <div class="slide" id="slide8">
+    <div class="content">
+      <h1 class="title" style="background: linear-gradient(90deg, #ec4899, #f472b6); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Ejemplo 4: Cláusula Throws</h1>
+      <h2 style="background:#831843; color:#f9a8d4;">Demuestra cómo delegar la responsabilidad de un error de archivos (IOException) a quien llama al método.<br>Jerarquía: Throwable → Exception → IOException.</h2>
+      <div class="code">
+import java.io.FileReader;
+import java.io.IOException;
+
+public class Ejemplo4 {
+    // El método avisa que puede fallar con 'throws'
+    public static void abrirArchivo() throws IOException {
+        FileReader fr = new FileReader("archivo_inexistente.txt");
+    }
+    public static void main(String[] args) {
+        try {
+            abrirArchivo();
+        } catch (IOException e) {
+            System.err.println("CAPTURA: El archivo solicitado no se pudo encontrar.");
+        }
+    }
+}
+      </div>
+      <div class="output">CAPTURA: El archivo solicitado no se pudo encontrar.</div>
+    </div>
+  </div>
+
+  <!-- Diapositiva 9: Ejemplo 5 -->
+  <div class="slide" id="slide9">
+    <div class="content">
+      <h1 class="title" style="background: linear-gradient(90deg, #eab308, #facc15); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Ejemplo 5: Excepción Personalizada</h1>
+      <h2 style="background:#422006; color:#fde047;">Demuestra cómo extender la clase Exception para crear tus propios errores.</h2>
+      <div class="code">
+// Creamos nuestra propia clase de error
+class ErrorSaldoException extends Exception {
+    public ErrorSaldoException(String msg) { super(msg); }
+}
+public class Ejemplo5 {
+    public static void main(String[] args) {
+        int saldo = 50;
+        int retiro = 100;
+        try {
+            if (retiro > saldo) {
+                throw new ErrorSaldoException("No tienes suficiente dinero.");
+            }
+        } catch (ErrorSaldoException e) {
+            System.err.println("REGLA DE NEGOCIO: " + e.getMessage());
+        }
+    }
+}
+      </div>
+      <div class="output">REGLA DE NEGOCIO: No tienes suficiente dinero.</div>
+    </div>
+  </div>
+
+  <!-- Diapositiva 10: Conclusiones -->
+  <div class="slide" id="slide10">
+    <div class="content">
+      <h1 class="title">Conclusiones</h1>
+      <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:25px; margin-top:30px;">
+        <div style="background:#1e2937; padding:25px; border-radius:12px;">
+          <strong>Separación</strong><br>
+          Separa el código de manejo de errores de la lógica principal.
+        </div>
+        <div style="background:#1e2937; padding:25px; border-radius:12px;">
+          <strong>Propagación</strong><br>
+          Las excepciones pueden propagarse hacia arriba en la pila de llamadas (Stack Unwinding).
+        </div>
+        <div style="background:#1e2937; padding:25px; border-radius:12px;">
+          <strong>Confianza</strong><br>
+          Un buen manejo incrementa la confianza del usuario en el software.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Diapositiva 11: Fin -->
+  <div class="slide" id="slide11">
+    <div class="content">
+      <h1 class="title" style="font-size:4rem;">¿Preguntas?</h1>
+      <p style="font-size:2rem; margin-top:60px;">Muchas gracias por su atención.</p>
+    </div>
+  </div>
+
+  <div class="nav">
+    <button onclick="prevSlide()">← Anterior</button>
+    <button onclick="nextSlide()">Siguiente →</button>
+  </div>
+
+  <script>
+    let currentSlide = 1;
+    const totalSlides = 11;
+
+    function showSlide(n) {
+      document.querySelectorAll('.slide').forEach(slide => slide.classList.remove('active'));
+      document.getElementById(`slide${n}`).classList.add('active');
+      currentSlide = n;
+    }
+
+    function nextSlide() {
+      if (currentSlide < totalSlides) showSlide(currentSlide + 1);
+    }
+
+    function prevSlide() {
+      if (currentSlide > 1) showSlide(currentSlide - 1);
+    }
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight' || e.key === ' ') nextSlide();
+      if (e.key === 'ArrowLeft') prevSlide();
+    });
+
+    let touchStartX = 0;
+    document.addEventListener('touchstart', e => touchStartX = e.changedTouches[0].screenX);
+    document.addEventListener('touchend', e => {
+      const touchEndX = e.changedTouches[0].screenX;
+      if (touchEndX < touchStartX - 50) nextSlide();
+      if (touchEndX > touchStartX + 50) prevSlide();
+    });
+
+    showSlide(1);
+  </script>
+</body>
+</html>
